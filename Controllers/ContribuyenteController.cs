@@ -2,6 +2,7 @@
 using RNC_API.Modelo;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,15 +23,24 @@ namespace RNC_API.Controllers
         }
 
         // GET api/<ContribuyenteController>/5
-        [HttpGet("{rnc}")]
-        public ActionResult<Contribuyente> Get(string rnc)
+        [HttpGet("rnc/{rnc}")]
+        public ActionResult<Contribuyente> Hola(string rnc)
         {
-            var contribuyente = _context.Contribuyentes
+            Contribuyente contribuyente = _context.Contribuyentes
                 .Where(s => s.Rnc == rnc).FirstOrDefault<Contribuyente>();
-            
+            Debug.WriteLine(contribuyente);
+
             return Ok(contribuyente);
         }
 
+        [HttpGet("razonSocial/{razonSocial}")]
+        public ActionResult<Contribuyente> GetRazonSocial(string razonSocial)
+        {
+            var contribuyente = _context.Contribuyentes.Where(s => s.RazonSocial.Equals(razonSocial)).FirstOrDefault<Contribuyente>();
+            return Ok(contribuyente);
+        }
+
+         
         //// POST api/<ContribuyenteController>
         //[HttpPost]
         //public void Post([FromBody] string value)
