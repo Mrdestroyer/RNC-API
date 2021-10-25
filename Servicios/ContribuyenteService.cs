@@ -65,7 +65,7 @@ namespace RNC_API.Servicios
                     int hora = f.Hour;
                     int min = f.Minute;
 
-                    if (hora == 18 && min >= 45 && min < 48) //Todos los dias a las 12AM
+                    if (hora == 19 && min >= 15 && min < 17) //Todos los dias a las 12AM
                     {
                         if (Extraido == false)
                         {
@@ -84,7 +84,7 @@ namespace RNC_API.Servicios
                         }
                         
                     }
-                    if(min >= 48)
+                    if(min >= 17)
                     {
                         Extraido = false;
                     }

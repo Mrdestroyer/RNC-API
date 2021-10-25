@@ -22,6 +22,7 @@ namespace RNC_API.Servicios
             {
                 Debug.WriteLine("Descomprimiendo archivo");
                 ZipFile.ExtractToDirectory(rutaArchivo, rutaDestino);
+         
                 Debug.WriteLine("Archivo descomprimido");
             }catch(Exception e)
             {
@@ -36,18 +37,16 @@ namespace RNC_API.Servicios
         {
             try
             {
-                Debug.WriteLine("Descomprimiendo archivo");
-                ZipFile.ExtractToDirectory(rutaArchivo, rutaDestino);
+                this.DescomprimeArchivoZip(rutaArchivo, rutaDestino);
                 if (eliminaArchivoDespuesTerminar)
                 {
-                    File.Delete(rutaDestino);
+                    File.Delete(rutaArchivo);
                 }
-                Debug.WriteLine("Archivo descomprimido");
-            }
-            catch (Exception e)
+            }catch(Exception e)
             {
-                Debug.WriteLine("Error {0}", e);
+                Debug.WriteLine("Error al descomprimir {0}", e);
             }
+            
         }
 
 
