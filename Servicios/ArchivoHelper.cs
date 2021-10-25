@@ -28,6 +28,29 @@ namespace RNC_API.Servicios
                 Debug.WriteLine("Error {0}", e);
             }
         }
+        /*
+         *  Descomprime archivo zip en la ruta Especificada y si eliminaArchivoDespuesTerminar es = True elimina el archivo zip
+         *  luego de su extraccion
+         */
+        public void DescomprimeArchivoZip(String rutaArchivo, String rutaDestino, bool eliminaArchivoDespuesTerminar)
+        {
+            try
+            {
+                Debug.WriteLine("Descomprimiendo archivo");
+                ZipFile.ExtractToDirectory(rutaArchivo, rutaDestino);
+                if (eliminaArchivoDespuesTerminar)
+                {
+                    File.Delete(rutaDestino);
+                }
+                Debug.WriteLine("Archivo descomprimido");
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("Error {0}", e);
+            }
+        }
+
+
         public void DescargaArchivo(String urlDescarga, String rutaGuardadoArchivo)
         {
             Debug.WriteLine("Descargando archivo archivo helper");
@@ -57,9 +80,11 @@ namespace RNC_API.Servicios
                         }
                         bytesRead = responseStream.Read(buffer, 0, 4096);
                     }
+
+                    fileStream.Close();
                 }
 
-
+                responseStream.Close();
             }
             Debug.WriteLine("Fin descarga en archivoHelper");
         }

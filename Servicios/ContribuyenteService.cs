@@ -15,26 +15,33 @@ namespace RNC_API.Servicios
     public class ContribuyenteService : IServicio
     {
         private static ContribuyenteService contribuyenteService;
-        private String nombreArchivo = "DGII_RNC.TXT";
-        private String rutaGuardado = @"./TMP/";
-        public string rutaArchivoDatos;
 
-        private String rutaArchivoZip;
+        private String RUTA_TEMPORAL;
+
+        private String nombreArchivoTextoDatos;
+        private String rutaGuardadoArchivoTXT;
+        public string rutaArchivoDatos;
 
         private bool Extraido;
 
         public const String URL_ARCHIVO_DATA = @"https://dgii.gov.do/app/WebApps/Consultas/RNC/DGII_RNC.zip";
-        private const String RUTA_ARCHIVO_ZIP = @"./DGII_RNC.zip";
+        private String RUTA_ARCHIVO_ZIP;
 
-        //private companias_dbContext _context;
+
+
         private ContribuyenteModel contribuyenteModel;
         private ArchivoHelper archivoHelper;
         private ContribuyenteService()
         {
-            rutaArchivoDatos = rutaGuardado + nombreArchivo;
-           
+            RUTA_TEMPORAL = Path.GetTempPath();
+            RUTA_ARCHIVO_ZIP = RUTA_TEMPORAL + @"DGII_RNC.zip";
+
+            nombreArchivoTextoDatos = "DGII_RNC.TXT";
+            rutaGuardadoArchivoTXT = RUTA_TEMPORAL + @"TMP\";
+
+            rutaArchivoDatos = rutaGuardadoArchivoTXT + nombreArchivoTextoDatos;
+
             Extraido = false;
-            /* _context = new companias_dbContext();*/
             contribuyenteModel = new ContribuyenteModel();
             archivoHelper = new ArchivoHelper();
         }
@@ -58,7 +65,7 @@ namespace RNC_API.Servicios
                     int hora = f.Hour;
                     int min = f.Minute;
 
-                    if (hora == 0 && min >= 0 && min < 4) //Todos los dias a las 12AM
+                    if (hora == 18 && min >= 45 && min < 48) //Todos los dias a las 12AM
                     {
                         if (Extraido == false)
                         {
@@ -70,10 +77,14 @@ namespace RNC_API.Servicios
                             List<Contribuyente> listaFaltante = this.GetListaFaltante(contribuyentesFromArhivo, contribuyentesFromBBBDD);
                             contribuyenteModel.InsertaContribuyente(listaFaltante);
                             Extraido = true;
+
+                            contribuyentesFromArhivo.Clear();
+                            contribuyentesFromBBBDD.Clear();
+                            listaFaltante.Clear();
                         }
                         
                     }
-                    if(min >= 4)
+                    if(min >= 48)
                     {
                         Extraido = false;
                     }
@@ -88,7 +99,6 @@ namespace RNC_API.Servicios
         }
         public void Stop()
         {
-
         }
 
         /*  
@@ -136,7 +146,7 @@ namespace RNC_API.Servicios
             //Descargar archivo
             Task.WaitAll(h);
 
-            Task desc = Task.Factory.StartNew(() => this.archivoHelper.DescomprimeArchivoZip(RUTA_ARCHIVO_ZIP, @"./"));
+            Task desc = Task.Factory.StartNew(() => this.archivoHelper.DescomprimeArchivoZip(RUTA_ARCHIVO_ZIP, RUTA_TEMPORAL, true));
             Task.WaitAll(desc);
             //this.DescargarArchivoDatos(this.rutaGuardado);
 
@@ -144,6 +154,7 @@ namespace RNC_API.Servicios
             Debug.WriteLine("Obteniendo listado ...");
             List<Contribuyente> listaContribuy = new List<Contribuyente>();
 
+            //RUTA DE ARCHIVO DE TEXTO CON LOS REGISTROS
             using (StreamReader sr = new StreamReader(rutaArchivoDatos, Encoding.GetEncoding("iso-8859-1")))
             {
                 String s = "";
@@ -175,12 +186,12 @@ namespace RNC_API.Servicios
                         listaContribuy.Add(contribuyente);
                     }
                 }
+
+                sr.Close();
             }
 
             return listaContribuy;
         }
-
-       
 
         public void ExportInformacionContribuyentes(List<Contribuyente> empresas, String rutaArchivo)
         {
@@ -191,6 +202,7 @@ namespace RNC_API.Servicios
                 {
                     sw.WriteLine(empresas[i].Rnc + "|" + empresas[i].RazonSocial + "|" + empresas[i].NombreComercial);
                 }
+
             }
 
         }
