@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using RNC_API.Servicios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,9 @@ namespace RNC_API
     {
         public static void Main(string[] args)
         {
+            ServicesController sc = new ServicesController();
+            sc.IniciaDataEstractorService();
+
             CreateHostBuilder(args).Build().Run();
         }
 

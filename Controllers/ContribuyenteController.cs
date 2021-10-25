@@ -14,7 +14,9 @@ namespace RNC_API.Controllers
     [ApiController]
     public class ContribuyenteController : ControllerBase
     {
-        private companias_dbContext _context = new companias_dbContext();
+        //private companias_dbContext _context = new companias_dbContext();
+        private ContribuyenteModel modeloC = new ContribuyenteModel();
+
         // GET: api/<ContribuyenteController>
         [HttpGet]
         public ActionResult<IEnumerable<Contribuyente>> Get()
@@ -26,8 +28,12 @@ namespace RNC_API.Controllers
         [HttpGet("rnc/{rnc}")]
         public ActionResult<Contribuyente> Hola(string rnc)
         {
-            Contribuyente contribuyente = _context.Contribuyentes
+            var contribuyente = modeloC.GetContribuyentePorRnc(rnc);
+
+            /*Contribuyente contribuyente = _context.Contribuyentes
                 .Where(s => s.Rnc == rnc).FirstOrDefault<Contribuyente>();
+            */
+            
             Debug.WriteLine(contribuyente);
 
             return Ok(contribuyente);
@@ -36,7 +42,8 @@ namespace RNC_API.Controllers
         [HttpGet("razonSocial/{razonSocial}")]
         public ActionResult<Contribuyente> GetRazonSocial(string razonSocial)
         {
-            var contribuyente = _context.Contribuyentes.Where(s => s.RazonSocial.Equals(razonSocial)).FirstOrDefault<Contribuyente>();
+            //var contribuyente = _context.Contribuyentes.Where(s => s.RazonSocial.Equals(razonSocial)).FirstOrDefault<Contribuyente>();
+            var contribuyente = modeloC.GetContribuyentePorRazonSocial(razonSocial);
             return Ok(contribuyente);
         }
 
