@@ -21,7 +21,7 @@ namespace RNC_API.Servicios
             try
             {
                 Debug.WriteLine("Descomprimiendo archivo");
-                ZipFile.ExtractToDirectory(rutaArchivo, rutaDestino);
+                ZipFile.ExtractToDirectory(rutaArchivo, rutaDestino, true);
          
                 Debug.WriteLine("Archivo descomprimido");
             }catch(Exception e)

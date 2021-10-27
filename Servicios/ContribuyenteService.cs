@@ -57,6 +57,11 @@ namespace RNC_API.Servicios
 
         public void Run()
         {
+
+            List<Contribuyente> contribuyentesFromArhivo;
+            List<Contribuyente> contribuyentesFromBBBDD;
+            List<Contribuyente> listaFaltante;
+
             try
             {
                 while (true)
@@ -65,31 +70,30 @@ namespace RNC_API.Servicios
                     int hora = f.Hour;
                     int min = f.Minute;
 
-                    if (hora == 19 && min >= 15 && min < 17) //Todos los dias a las 12AM
+                    if (hora == 0 && min >= 0 && min < 2) //Todos los dias a las 12AM
                     {
                         if (Extraido == false)
                         {
-                            Debug.WriteLine("Las condiciones se cumplen, procesando...");
-                            List<Contribuyente> contribuyentesFromArhivo = this.ExtraeListadoContribuyentes();
-                            List<Contribuyente> contribuyentesFromBBBDD = contribuyenteModel.GetListaContribuyentes();
-
-                            //INICIAR LA COMPARACION
-                            List<Contribuyente> listaFaltante = this.GetListaFaltante(contribuyentesFromArhivo, contribuyentesFromBBBDD);
+                            contribuyentesFromArhivo = this.ExtraeListadoContribuyentes();
+                            contribuyentesFromBBBDD = contribuyenteModel.GetListaContribuyentes();
+  
+                            listaFaltante = this.GetListaFaltante(contribuyentesFromArhivo, contribuyentesFromBBBDD);
                             contribuyenteModel.InsertaContribuyente(listaFaltante);
                             Extraido = true;
 
-                            contribuyentesFromArhivo.Clear();
-                            contribuyentesFromBBBDD.Clear();
-                            listaFaltante.Clear();
+                            contribuyentesFromArhivo = null;
+                            contribuyentesFromBBBDD = null;
+                            listaFaltante = null;
+                          
                         }
-                        
                     }
-                    if(min >= 17)
+                    if(min >= 2)
                     {
                         Extraido = false;
                     }
                     Thread.Sleep(30000);
                 }
+
             }catch(Exception e)
             {
                 Console.WriteLine(e);
@@ -130,11 +134,7 @@ namespace RNC_API.Servicios
                 }
             }
 
-            Debug.WriteLine("Cantidad de nueos registros: {0}", faltantes.Count);
-            for(int i = 0; i < faltantes.Count; i++)
-            {
-                Debug.WriteLine(faltantes[i].Rnc);
-            }
+            
             return faltantes;
         }
 
@@ -148,6 +148,7 @@ namespace RNC_API.Servicios
 
             Task desc = Task.Factory.StartNew(() => this.archivoHelper.DescomprimeArchivoZip(RUTA_ARCHIVO_ZIP, RUTA_TEMPORAL, true));
             Task.WaitAll(desc);
+            
             //this.DescargarArchivoDatos(this.rutaGuardado);
 
 
@@ -186,9 +187,10 @@ namespace RNC_API.Servicios
                         listaContribuy.Add(contribuyente);
                     }
                 }
-
-                sr.Close();
+                sr.Dispose();
+                //sr.Close();
             }
+            
 
             return listaContribuy;
         }
@@ -202,9 +204,7 @@ namespace RNC_API.Servicios
                 {
                     sw.WriteLine(empresas[i].Rnc + "|" + empresas[i].RazonSocial + "|" + empresas[i].NombreComercial);
                 }
-
             }
-
         }
 
         /**
